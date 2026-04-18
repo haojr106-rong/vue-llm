@@ -1,0 +1,26 @@
+# EditorConfig 配置文件 - 用于统一不同编辑器/IDE的代码格式化规则
+# 匹配的文件类型：JavaScript/TypeScript 相关文件、Vue 单文件、各类 CSS 预处理器文件
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl}]
+
+# 文件编码格式：强制使用 UTF-8 编码（避免中文乱码等编码问题）
+charset = utf-8
+
+# 缩进大小：每个缩进级别占用 2 个字符宽度
+indent_size = 2
+
+# 缩进样式：使用空格（space）而非制表符（tab）进行缩进
+indent_style = space
+
+# 文件末尾：强制插入一个空行（符合大多数代码规范的要求）
+insert_final_newline = true
+
+# 行尾空格：自动删除每行末尾的多余空白字符（避免无用空格提交到代码仓库）
+trim_trailing_whitespace = true
+
+# 换行符格式：使用 LF（Unix/Linux/macOS 风格）换行符，而非 CRLF（Windows 风格）
+end_of_line = lf
+
+# 最大行长度：单行代码的最大字符数限制为 100（超过则建议换行，提升代码可读性）
+max_line_length = 100
+
+

@@ -1,0 +1,16 @@
+{
+  // 编译器选项：配置 TypeScript/JavaScript 编译器的核心规则
+  "compilerOptions": {
+    // 路径别名配置：简化项目内文件导入路径，提升代码可读性和维护性
+    "paths": {
+      // 定义别名 @，映射到项目根目录下的 src 文件夹及其所有子目录
+      // 例如：import xxx from '@/utils' 等价于 import xxx from './src/utils'
+      "@/*": ["./src/*"]
+    }
+  },
+  // 排除编译的文件/目录：指定编译器不需要处理的文件/文件夹
+  "exclude": [
+    "node_modules", // 排除第三方依赖目录（无需编译，体积大）
+    "dist"          // 排除打包输出目录（避免编译生成的文件被重复处理）
+  ]
+}

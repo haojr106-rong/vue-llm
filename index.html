@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- 通用基础：设置页面/favicon 图标（路径可自定义）rel="icon"告诉浏览器这是图标 -->
+  <link rel="icon" href="/favicon.ico">
+  <!-- 通用基础：视口配置，适配移动端，内容占满屏幕，不缩放 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 自定义：页面标题，可根据项目需求修改 -->
+  <title>artificial stupidity</title>
+  <!-- 自定义：注释标记，提示此处可添加自定义代码（如引入 CSS/JS） -->
+</head>
+
+<body>
+  <div id="app"></div>
+  <!-- 通用基础：引入项目入口 JS 文件（路径/文件名可自定义），加了module，浏览器以模块化解析main.js，所以main才能写export这些 
+   import可以从单线程转化为后台，避免浏览器阻塞
+   -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
