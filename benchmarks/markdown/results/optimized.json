@@ -1,5 +1,5 @@
 {
-  "benchmark": "legacy-markdown-rendering",
+  "benchmark": "message-keyed-markdown-cache",
   "generatedAt": "2026-10-08T08:50:33.385Z",
   "environment": {
     "node": "v20.19.0",
@@ -12,17 +12,17 @@
     "streamingUpdateCount": 200,
     "content": "Markdown headings, lists, tables, and JavaScript blocks"
   },
-  "baseline": {
+  "optimized": {
     "metrics": {
-      "markdownParseCalls": 6000,
-      "parsedCharacters": 2573276,
-      "durationMs": 816,
-      "unchangedHistoricalParseCalls": 5800,
-      "changingMessageParseCalls": 200
+      "markdownParseCalls": 229,
+      "parsedCharacters": 1116397,
+      "cacheHits": 5771,
+      "evictions": 0,
+      "durationMs": 167.12
     },
     "outputDigest": "9d919b74d9c5d36850e047aa6ba49178c1421a9c98e930d75cca3f0c896316a6",
     "finalStreamingCharacters": 11192,
-    "cacheSize": null
+    "cacheSize": 30
   },
   "notes": {
     "networkRequestsSent": 0,

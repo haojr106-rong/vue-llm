@@ -1,0 +1,28 @@
+{
+  "benchmark": "markdown-rendering-comparison",
+  "generatedAt": "2026-10-08T08:50:33.385Z",
+  "fixture": {
+    "visibleMessageCount": 30,
+    "unchangedHistoricalMessageCount": 29,
+    "streamingUpdateCount": 200,
+    "content": "Markdown headings, lists, tables, and JavaScript blocks"
+  },
+  "before": {
+    "markdownParseCalls": 6000,
+    "parsedCharacters": 2573276,
+    "durationMs": 816
+  },
+  "after": {
+    "markdownParseCalls": 229,
+    "parsedCharacters": 1116397,
+    "cacheHits": 5771,
+    "cacheEntries": 30,
+    "durationMs": 167.12,
+    "identicalFinalHtml": true
+  },
+  "improvement": {
+    "markdownParseCallsReductionPercent": 96.18,
+    "parsedCharactersReductionPercent": 56.62,
+    "durationReductionPercent": 79.52
+  }
+}

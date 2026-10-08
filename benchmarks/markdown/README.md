@@ -19,5 +19,12 @@ The primary metrics are the number of Markdown parse calls and the cumulative
 number of input characters parsed. Runtime is recorded only as an auxiliary
 machine-dependent value.
 
-The generated result is stored at `results/baseline.json`. The future cache
-strategy must reuse the same fixture and verify identical final HTML output.
+The optimized strategy keeps one latest source/HTML pair per message ID. An
+unchanged message reuses its cached HTML, while a streaming update replaces
+only that message's previous entry. Removed messages are pruned so old content
+does not accumulate indefinitely, and a 200-entry LRU limit bounds memory when
+many historical messages have been viewed.
+
+Results are stored in `results/baseline.json`, `results/optimized.json`, and
+`results/comparison.json`. Automatic assertions verify identical final HTML,
+expected cache hits, bounded cache size, replacement, pruning, and cleanup.

@@ -13,17 +13,8 @@ import {
   watch,
   watchEffect,
 } from "vue";
-// 导入 markdown-it 库：用于将 Markdown 文本解析渲染成 HTML
-import MarkdownIt from "markdown-it";
-
-// 导入 highlight.js 库：用于代码块的语法高亮
-import hljs from "highlight.js";
-
 // 导入 highlight.js 的 GitHub 风格样式：让代码高亮显示为 GitHub 主题样式
 import "highlight.js/styles/github.css";
-
-// 导入 markdown-it-table 插件：增强 markdown-it 的表格渲染功能（优化表格样式/布局）
-import { markdownItTable } from "markdown-it-table";
 
 import {
   CopyDocument,
@@ -41,6 +32,7 @@ import { chatStream } from "@/apis/deepseek";
 import AttachmentPreview from "@/components/chat/AttachmentPreview.vue";
 import ChatInput from "@/components/chat/ChatInput.vue";
 import { useSessionStore } from "@/stores/session";
+import { createMessageMarkdownCache } from "@/utils/markdownRenderer";
 import assistantAvatar from "@/assets/avatars/assistant.svg";
 import userAvatar from "@/assets/avatars/user.svg";
 
@@ -114,34 +106,16 @@ watch(
   },
 );
 
-/**
- * 【配置 Markdown 渲染器】
- * 设定如何把大模型吐出的纯文本变成漂亮的 HTML。
- * 开启了代码高亮 (highlight.js)、表格 (tables)、自动转换链接等功能。
- * hljs和MarkdownIt 这类文本库学习
- */
-// 初始化 MarkdownIt 实例，配置解析和渲染参数
-const md = new MarkdownIt({
-  // 代码块高亮处理函数：code=代码内容，lang=代码语言标识
-  highlight: (code, lang) => {
-    // 判断是否传入有效语言：检查 lang 存在且 highlight.js 支持该语言
-    const validLang = !!(lang && hljs.getLanguage(lang));
-    // 根据是否有有效语言，选择对应高亮方式
-    const highlighted = validLang
-      ? hljs.highlight(code, { language: lang }).value // 有指定语言：按指定语言高亮
-      : hljs.highlightAuto(code).value; // 无有效语言：自动识别代码语言高亮
-    // 返回渲染后的 HTML 结构，带上对应的代码语言 class 便于样式匹配
-    return `<pre><code class="hljs ${validLang ? `language-${lang}` : ""}">${highlighted}</code></pre>`;
-  },
-  html: true,        // 允许解析 HTML 标签
-  linkify: true,     // 自动将 URL 文本转换为可点击的链接
-  breaks: true,      // 将换行符 \n 转换为 <br> 标签（类似 GitHub 换行效果）
-  typographer: true, // 开启排版优化：替换引号、破折号等为美观的印刷体
-  tables: true,     // 启用表格语法支持
-});
+// 每条消息只保留最新 Markdown/HTML 对，内容未变化时直接复用 HTML。
+const markdownCache = createMessageMarkdownCache();
 
-// 挂载 Markdown 表格优化插件
-md.use(markdownItTable);
+watch(
+  messages,
+  (currentMessages) => {
+    markdownCache.prune(currentMessages.map((item) => item._key));
+  },
+  { immediate: true },
+);
 
 // 引用虚拟列表的 DOM 实例
 const scrollerRef = ref(null);
@@ -358,6 +332,7 @@ onUpdated(() => {
 onBeforeUnmount(() => {
   clearTimeout(bufferTimer);
   flushBuffer();
+  markdownCache.clear();
   if (resizeObserver) {
     resizeObserver.disconnect();
   }
@@ -421,7 +396,8 @@ const submit = async ({ attachments = [] } = {}) => {
  * 【渲染 Markdown】
  * 在模板中调用，把纯文本丢给 md 渲染器转成 HTML
  */
-const renderMarkdown = (raw) => md.render(raw || "");
+const renderMarkdown = (messageId, raw) =>
+  markdownCache.render(messageId, raw);
 
 
 /**
@@ -759,7 +735,10 @@ defineExpose({ selecthistory });
               {{ reasoningText(index) }}
             </div>
 
-            <div class="message-body" v-html="renderMarkdown(item.content)"></div>
+            <div
+              class="message-body"
+              v-html="renderMarkdown(item._key, item.content)"
+            ></div>
 
             <AttachmentPreview
               v-if="item.attachments?.length"
