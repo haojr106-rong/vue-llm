@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix",
-    "benchmark:sse": "node benchmarks/sse/benchmark.mjs"
+    "benchmark:sse": "node benchmarks/sse/benchmark.mjs",
+    "benchmark:context": "node benchmarks/context/benchmark.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

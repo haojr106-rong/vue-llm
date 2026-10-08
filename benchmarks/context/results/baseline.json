@@ -1,0 +1,75 @@
+{
+  "benchmark": "legacy-full-history-context",
+  "generatedAt": "2026-10-08T08:19:47.268Z",
+  "environment": {
+    "node": "v20.19.0",
+    "platform": "win32-x64",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz"
+  },
+  "fixture": {
+    "roundCount": 120,
+    "totalMessageCount": 240,
+    "content": "deterministic mixed Chinese and ASCII conversation"
+  },
+  "baseline": {
+    "policy": "full-history-without-budget",
+    "finalRequest": {
+      "messageCount": 239,
+      "requestCharacters": 60798,
+      "requestBytes": 144760,
+      "estimatedTokens": 41510
+    },
+    "cumulativeAcrossRounds": {
+      "requestCount": 120,
+      "requestBytes": 8692158,
+      "estimatedTokens": 2491917
+    },
+    "growth": [
+      {
+        "round": 10,
+        "messageCount": 19,
+        "requestCharacters": 4677,
+        "requestBytes": 11205,
+        "estimatedTokens": 3197
+      },
+      {
+        "round": 25,
+        "messageCount": 49,
+        "requestCharacters": 12297,
+        "requestBytes": 29385,
+        "estimatedTokens": 8417
+      },
+      {
+        "round": 50,
+        "messageCount": 99,
+        "requestCharacters": 24997,
+        "requestBytes": 59685,
+        "estimatedTokens": 17107
+      },
+      {
+        "round": 100,
+        "messageCount": 199,
+        "requestCharacters": 50398,
+        "requestBytes": 120280,
+        "estimatedTokens": 34495
+      },
+      {
+        "round": 120,
+        "messageCount": 239,
+        "requestCharacters": 60798,
+        "requestBytes": 144760,
+        "estimatedTokens": 41510
+      }
+    ],
+    "retained": {
+      "messageCount": 239,
+      "messageRatio": 1,
+      "containsFirstMessage": true,
+      "containsLatestMessage": true
+    }
+  },
+  "notes": {
+    "networkRequestsSent": 0,
+    "tokenMetric": "deterministic estimate, not provider billing tokens"
+  }
+}
