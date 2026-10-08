@@ -1,6 +1,6 @@
 {
-  "benchmark": "legacy-cumulative-sse-parser",
-  "generatedAt": "2026-10-08T06:39:16.499Z",
+  "benchmark": "incremental-buffered-sse-parser",
+  "generatedAt": "2026-10-08T06:39:16.535Z",
   "environment": {
     "node": "v20.19.0",
     "platform": "win32-x64",
@@ -35,14 +35,15 @@
       "exactOrderMatch": true
     },
     "doneCount": 1,
-    "callbackFailures": 309,
-    "parseErrors": 309,
-    "zeroDuplicateAndLoss": true
+    "callbackFailures": 0,
+    "parseErrors": 0,
+    "zeroDuplicateAndLoss": true,
+    "pendingFragmentLength": 0
   },
   "performance": {
-    "jsonParseCalls": 1705219,
-    "scannedDataLines": 1705220,
-    "parsedEvents": null,
-    "durationMs": 1696.53
+    "jsonParseCalls": 10000,
+    "scannedDataLines": null,
+    "parsedEvents": 10001,
+    "durationMs": 30.69
   }
 }

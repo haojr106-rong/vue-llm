@@ -6,6 +6,7 @@
 import axios from "axios";
 // 导入element-plus的消息提示组件，用于错误提示
 import { ElMessage } from "element-plus";
+import { IncrementalSseParser } from "@/utils/incrementalSseParser";
 
 // 导入DeepSeek API密钥配置
 import { DEEPSEEK_API_KEY } from "@/config/deepseekKey";
@@ -77,27 +78,12 @@ export async function chatStream(
   onReasoning,
   model = "deepseek-reasoner",
 ) {
-  // 记录已处理的内容片段数量，避免重复处理
-  let processedContentChunks = 0;
-  // 记录已处理的推理片段数量，避免重复处理
-  let processedReasonChunks = 0;
-
-  // tokens 这个是ai回复的数据，如果书数组类型["哈", "哈", "大", "笑"]需要把他拆成单个字符，
-  // callback 是处理函数比如adddelta为实参
-  const emitTokens = (tokens, callback) => {
-    // 校验参数合法性：回调函数不存在/内容为空时直接返回
-    if (!callback || tokens === undefined || tokens === null) {
-      return;
-    }
-    // 如果是数组类型，遍历每个token并调用回调
-    if (Array.isArray(tokens)) {
-      tokens.forEach((token) => callback(token));
-    } else {
-      // 非数组类型直接调用回调
-      callback(tokens);
-    }
-  };
-
+  // 每次请求使用独立解析器，避免不同会话之间共享解析状态。
+  const parser = new IncrementalSseParser({
+    onContent: onChunk,
+    onReasoning,
+    onDone,
+  });
 
   // 发起POST请求调用DeepSeek流式对话接口
   await api.post(
@@ -118,72 +104,10 @@ export async function chatStream(
       responseType: "text",
       // 下载进度回调（核心：处理流式返回的每一段数据）
       onDownloadProgress(evt) {
-        // 获取当前已返回的所有响应内容
-        const chunk = evt.event.currentTarget.response;
-        // 按换行分割内容，过滤出以"data: "开头的有效SSE格式行
-        const lines = chunk
-          .split("\n")//变为对象数组以换行分割
-          .filter((line) => line.startsWith("data: "));
-
-        // 用于标记当前处理的内容片段索引
-        let index = 0;
-        // 用于标记当前处理的推理片段索引
-        let reasonIndex = 0;
-
-        // 遍历每一行有效数据
-        for (const line of lines) {
-          // 检测到结束标记时，触发完成回调并终止循环
-          if (line === "data: [DONE]") {
-            onDone?.();
-            return;
-          }
-
-          try {//这里是解析思考过程
-            // 解析JSON数据：去除前缀"data: "后转为对象，JSON.parse会凭空制造新的数组或者对象因为‘里面是对象’
-            const payload = JSON.parse(line.slice(6));
-            // 提取推理内容片段（delta表示增量）
-            // [
-            //   'data: {"id": "1", "choices": [{"delta": {"content": "你"}}]}',  // 第 1 行 (文本)
-            //   {"id": "2", "choices": [{"delta": {"content": "好"}}，...........]}  // 解析完变为对象
-            // ]  reasoning_content思考过程
-            const reasoning = payload.choices?.[0]?.delta?.reasoning_content;
-            // 处理推理内容
-            if (reasoning) {
-              // 仅处理未处理过的推理片段（避免重复回调）
-              if (reasonIndex >= processedReasonChunks) {
-                // 分发推理内容到对应的回调函数
-                emitTokens(reasoning, onReasoning);
-                // 更新已处理的推理片段计数
-                processedReasonChunks++;
-              }
-              // 推进推理片段索引
-              reasonIndex++;
-            }
-
-            // 这里是提取真实的回复
-            const delta = payload.choices?.[0]?.delta?.content;
-            // 处理对话内容
-            if (delta) {
-              // 仅处理未处理过的内容片段（避免重复回调）
-              if (index >= processedContentChunks) {
-                // 分发对话内容到对应的回调函数
-                emitTokens(delta, onChunk);
-                // 更新已处理的内容片段计数
-                processedContentChunks++;
-              }
-              // 推进内容片段索引
-              index++;
-            }
-          } catch (error) {
-            // 捕获错误：如果是手动取消请求，触发完成回调
-            if (axios.isCancel(error)) {
-              onDone?.();
-            } else {
-              // 其他错误重新抛出，交由响应拦截器处理
-              throw error;
-            }
-          }
-        }
+        // Axios 提供累计响应文本；解析器只读取新增字符，并把尚未
+        // 完整结束的 SSE 事件保留到下一次回调继续拼接。
+        const cumulativeResponse = evt.event.currentTarget.response;
+        parser.push(cumulativeResponse);
       },
     },
   );

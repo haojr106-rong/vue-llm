@@ -1,0 +1,32 @@
+{
+  "benchmark": "sse-parser-comparison",
+  "generatedAt": "2026-10-08T06:39:16.537Z",
+  "fixture": {
+    "eventCount": 10000,
+    "responseCharacters": 780022,
+    "responseBytes": 840022,
+    "cumulativeCallbackCount": 343,
+    "splitOptions": {
+      "seed": 20261008,
+      "minChunkSize": 512,
+      "maxChunkSize": 4096
+    }
+  },
+  "before": {
+    "callbackFailures": 309,
+    "parseErrors": 309,
+    "jsonParseCalls": 1705219,
+    "durationMs": 1696.53
+  },
+  "after": {
+    "callbackFailures": 0,
+    "parseErrors": 0,
+    "jsonParseCalls": 10000,
+    "durationMs": 30.69
+  },
+  "improvement": {
+    "jsonParseCallsReducedBy": 1695219,
+    "jsonParseCallsReductionPercent": 99.41,
+    "durationReductionPercent": 98.19
+  }
+}
