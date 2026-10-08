@@ -1,0 +1,47 @@
+{
+  "benchmark": "legacy-cumulative-sse-parser",
+  "generatedAt": "2026-10-08T06:04:01.732Z",
+  "environment": {
+    "node": "v20.19.0",
+    "platform": "win32-x64",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz"
+  },
+  "fixture": {
+    "eventCount": 10000,
+    "responseCharacters": 780022,
+    "responseBytes": 840022,
+    "cumulativeCallbackCount": 343,
+    "splitOptions": {
+      "seed": 20261008,
+      "minChunkSize": 512,
+      "maxChunkSize": 4096
+    }
+  },
+  "correctness": {
+    "content": {
+      "expectedCount": 6666,
+      "actualCount": 6666,
+      "missingCount": 0,
+      "unexpectedCount": 0,
+      "duplicateCount": 0,
+      "exactOrderMatch": true
+    },
+    "reasoning": {
+      "expectedCount": 3334,
+      "actualCount": 3334,
+      "missingCount": 0,
+      "unexpectedCount": 0,
+      "duplicateCount": 0,
+      "exactOrderMatch": true
+    },
+    "doneCount": 1,
+    "callbackFailures": 309,
+    "parseErrors": 309,
+    "zeroDuplicateAndLoss": true
+  },
+  "performance": {
+    "jsonParseCalls": 1705219,
+    "scannedDataLines": 1705220,
+    "durationMs": 1578.49
+  }
+}
