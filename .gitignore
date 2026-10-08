@@ -15,6 +15,15 @@ dist-ssr
 coverage
 *.local
 
+# Local environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local generated artifacts
+/.codex_docx_qa/
+/tmp/
+
 
 /cypress/videos/
 /cypress/screenshots/

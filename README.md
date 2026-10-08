@@ -73,11 +73,14 @@ npm run lint
 ### 配置 DeepSeek API 密钥
 
 1. 访问 [DeepSeek 控制台](https://platform.deepseek.com/) 创建或查看 API Key，确保该密钥具有调用聊天与推理模型的权限。
-2. 打开 `src/config/deepseekKey.js`，将占位字符串 `请在此填写你的 DeepSeek API 密钥...` 替换为自己的密钥，例如：
-   ```js
-   export const DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxx";
+2. 复制项目根目录下的 `.env.example` 为 `.env.local`，并填写自己的密钥：
+   ```env
+   VITE_DEEPSEEK_API_KEY=your_deepseek_api_key
    ```
-3. 出于安全考虑，不要将真实密钥提交到版本库，可在部署环境中通过构建脚本或环境变量注入同名文件。
+3. `src/config/deepseekKey.js` 会通过 `import.meta.env.VITE_DEEPSEEK_API_KEY` 读取该变量，无需将真实密钥写入源码。
+4. `.env.local` 已被 Git 忽略，请勿强制添加或提交；生产环境应通过部署平台的环境变量功能配置密钥。
+
+> 注意：前端环境变量会被打包到浏览器代码中。本项目的配置方式仅适用于本地学习和演示，正式部署时应通过后端代理调用模型接口，避免向客户端暴露长期有效的 API Key。
 
 ## 💡 功能说明
 

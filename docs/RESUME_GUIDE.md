@@ -17,11 +17,12 @@
 
 ## DeepSeek API 密钥说明
 - 在 [DeepSeek 控制台](https://platform.deepseek.com/) 申请具备聊天与推理权限的 API Key，并妥善保管。
-- 项目提供 `src/config/deepseekKey.js` 作为密钥占位文件，部署前将占位字符串替换为真实密钥即可，示例：
-  ```js
-  export const DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxx";
+- 本地运行时复制 `.env.example` 为 `.env.local`，并配置环境变量：
+  ```env
+  VITE_DEEPSEEK_API_KEY=your_deepseek_api_key
   ```
-- 建议在团队协作或线上部署时，通过环境变量或后端代理注入密钥，避免将敏感信息提交到版本库。
+- `src/config/deepseekKey.js` 通过 `import.meta.env.VITE_DEEPSEEK_API_KEY` 读取密钥，`.env.local` 不应提交到版本库。
+- Vite 前端环境变量最终会进入浏览器代码；线上部署应通过后端代理调用模型接口，不应在客户端保存长期有效的 API Key。
 
 ## 难点 & 解决方案
 - **问题：** 大模型流式返回速度不均导致 UI 抖动。
