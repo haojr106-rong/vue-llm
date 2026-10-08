@@ -1,0 +1,27 @@
+{
+  "benchmark": "file-parser-bundle-comparison",
+  "generatedAt": "2026-10-08T09:08:41.045Z",
+  "before": {
+    "initialJavaScriptBytes": 2061391,
+    "initialJavaScriptGzipBytes": 679544,
+    "initialModuleCount": 697,
+    "initialIncludesJsZip": true,
+    "initialIncludesPdfJs": true
+  },
+  "after": {
+    "initialJavaScriptBytes": 1456891,
+    "initialJavaScriptGzipBytes": 496121,
+    "initialModuleCount": 692,
+    "initialIncludesJsZip": false,
+    "initialIncludesPdfJs": false,
+    "lazyJavaScriptChunkCount": 3,
+    "lazyJavaScriptBytes": 507005,
+    "docxWorkerAssetBytes": 97664,
+    "pdfWorkerAssetBytes": 2174484
+  },
+  "improvement": {
+    "initialJavaScriptBytesReductionPercent": 29.32,
+    "initialJavaScriptGzipBytesReductionPercent": 26.99,
+    "initialModuleCountReductionPercent": 0.72
+  }
+}

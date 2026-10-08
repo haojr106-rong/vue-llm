@@ -13,8 +13,6 @@ import {
 } from "@element-plus/icons-vue";
 // 导入 Element Plus 消息提示和弹窗组件
 import { ElMessage, ElMessageBox } from "element-plus";
-// 导入 JSZip 用于解析 DOCX 文件（DOCX 本质是 ZIP 压缩包）
-import JSZip from "jszip";
 // 导入 Vue 3 组合式 API 核心方法
 import {
   computed,
@@ -29,18 +27,9 @@ import {
 
 // 导入 DeepSeek 流式响应终止方法
 import { abortStream } from "@/apis/deepseek";
-// 导入 PDF 解析库（兼容旧版构建方式），把导入的内容打包为一个对象
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-// 导入 PDF 解析专用的 Worker 线程（通过 Vite 路径别名处理）
-import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 
 // 定义组件名称（Vue 3 组件标识）
 defineOptions({ name: "ChatInput" });
-
-// 配置 PDF.js 的全局 Worker 路径，避免主线程阻塞
-if (pdfjsLib?.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
-}
 
 // ---------------------- Props 定义 ----------------------
 // 定义组件接收的属性，实现父子组件状态通信
@@ -266,67 +255,14 @@ const readAsPlainText = (file) =>
  */
 // 定义异步函数 extractDocxText，用于从 DOCX 文件中提取文本内容
 const extractDocxText = async (file) => {
-  // 尝试执行文件解析逻辑，捕获可能出现的异常
   try {
-    // 将上传的 File 对象转换为 ArrayBuffer 二进制数据，用于后续解析
-    const arrayBuffer = await file.arrayBuffer();
-
-    // 使用 JSZip 库加载 ArrayBuffer 格式的 ZIP 包（DOCX 本质是 ZIP 压缩文件）
-    const zip = await JSZip.loadAsync(arrayBuffer);
-
-    // 从 ZIP 包中获取 DOCX 核心的正文 XML 文件：word/document.xml
-    const documentFile = zip.file("word/document.xml");
-
-    // 判断是否成功获取到核心 XML 文件
-    if (!documentFile) {
-      // 未找到文件时，返回空正文和提示信息
-      return {
-        body: "",
-        note: "未能解析 DOCX 正文内容，已附带文件信息。",
-      };
-    }
-
-    // 将获取到的 XML 文件以字符串形式异步读取出来
-    const xml = await documentFile.async("string");
-
-    // 创建 DOMParser 实例，用于解析 XML 字符串为 DOM 文档
-    const parser = new DOMParser();
-
-    // 把 XML 字符串解析为可操作的 XML DOM 对象
-    const doc = parser.parseFromString(xml, "application/xml");
-
-    // 获取 XML 中所有的段落标签 <w:p>，并转为数组方便遍历
-    const paragraphs = Array.from(doc.getElementsByTagName("w:p"));
-
-    // 遍历所有段落，提取每个段落内的文本标签 <w:t> 内容
-    const text = paragraphs
-      .map((p) =>
-        // 对每个段落，提取内部所有 <w:t> 标签的文本内容并拼接
-        Array.from(p.getElementsByTagName("w:t"))
-          .map((node) => node.textContent) // 获取文本节点的纯文本
-          .join(""), // 把一个段落内的所有文本拼接成一行
-      )
-      .join("\n") // 段落之间用换行符分隔
-      .replace(/\n{3,}/g, "\n\n"); // 正则替换：把连续3个及以上换行替换成2个，清理多余空行
-
-    // 判断提取到的文本是否为空（去除首尾空白后）
-    if (!text.trim()) {
-      // 文本为空时返回空正文和对应提示
-      return {
-        body: "",
-        note: "DOCX 文件未检测到可提取的文本内容。",
-      };
-    }
-
-    // 文本提取成功，调用 truncatePreview 函数做长度截断/预览处理后返回
-    return truncatePreview(text);
-
-  // 捕获解析过程中任何可能的错误（文件损坏、格式异常、解析失败等）
+    // 仅在用户选择 DOCX 时加载调度模块；JSZip 位于 Worker 中。
+    const { extractDocxText: parseDocx } = await import(
+      "@/utils/fileParsers/docxParser"
+    );
+    return await parseDocx(file, { maxTextPreview: MAX_TEXT_PREVIEW });
   } catch (error) {
-    // 在控制台打印错误信息，方便调试
     console.error("Failed to extract DOCX", error);
-
-    // 解析出错时返回空正文和错误提示
     return {
       body: "",
       note: "解析 DOCX 文件时出错，已附带文件元信息。",
@@ -342,68 +278,14 @@ const extractDocxText = async (file) => {
  */
 
 const extractPdfText = async (file) => {
-  // 尝试执行 PDF 解析逻辑，捕获所有可能的异常
   try {
-    // 将上传的 File 对象转换为 ArrayBuffer 二进制数据，供 PDF.js 解析
-    const arrayBuffer = await file.arrayBuffer();
-
-    // 使用 pdfjsLib 加载 PDF 文档（内部启用 Worker 线程，防止阻塞主线程）
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-    // 创建数组 chunks，用于存储每一页提取出来的文本
-    const chunks = [];
-
-    // 逐页循环解析 PDF（从第 1 页开始，到总页数结束）
-    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-      // 获取当前页码对应的 PDF 页面对象
-      const page = await pdf.getPage(pageNumber);
-
-      // 获取当前页面的文本内容（返回包含所有文字块的对象）
-      const content = await page.getTextContent();
-
-      // 处理当前页面的文本内容：提取文字、合并空格、清理格式
-      const pageText = content.items
-        // 遍历页面中的每一个文本块，判断是否包含 str 属性，有则提取文字
-        .map((item) => ("str" in item ? item.str : ""))
-        // 把所有文本块用空格连接成一整段文字
-        .join(" ")
-        // 正则替换：把多个连续空白符（空格/换行/制表符）替换成单个空格
-        .replace(/\s+/g, " ")
-        // 去除文本首尾多余的空白字符
-        .trim();
-
-      // 如果当前页面提取到了有效文本，就存入 chunks 数组
-      if (pageText) {
-        chunks.push(pageText);
-      }
-
-      // 性能优化：如果总文本长度超过阈值（预览最大长度的1.5倍），立即停止继续解析页面
-      if (chunks.join("\n\n").length > MAX_TEXT_PREVIEW * 1.5) {
-        break;
-      }
-    }
-
-    // 把所有页面的文本用两个换行符连接，形成完整的文档文本
-    const combined = chunks.join("\n\n");
-
-    // 判断提取到的文本是否为空（去除首尾空白后）
-    if (!combined.trim()) {
-      // 无有效文本时，返回空正文和提示信息
-      return {
-        body: "",
-        note: "PDF 文件未检测到可提取的文本内容。",
-      };
-    }
-
-    // 文本提取成功，调用截断函数处理后返回最终预览文本
-    return truncatePreview(combined);
-
-  // 捕获解析过程中所有错误（文件损坏、加密PDF、格式异常、加载失败等）
+    // 仅在用户选择 PDF 时加载 PDF.js 和它的 Worker URL。
+    const { extractPdfText: parsePdf } = await import(
+      "@/utils/fileParsers/pdfParser"
+    );
+    return await parsePdf(file, { maxTextPreview: MAX_TEXT_PREVIEW });
   } catch (error) {
-    // 控制台打印错误日志，方便调试定位问题
     console.error("Failed to extract PDF", error);
-
-    // 解析失败时返回空正文和错误提示
     return {
       body: "",
       note: "解析 PDF 文件时出错，已附带文件元信息。",

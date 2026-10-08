@@ -15,6 +15,11 @@ whether JSZip and PDF.js are reachable from the initial entry. The PDF worker
 asset is reported separately because it is emitted as a worker resource rather
 than normal entry JavaScript.
 
-Build duration is auxiliary and machine-dependent. Bundle bytes and the initial
-dependency graph are the primary metrics. The generated summary is stored in
-`results/baseline.json`.
+The optimized build dynamically imports PDF.js only when a PDF is selected and
+moves JSZip into a DOCX Worker. Assertions verify that neither library remains
+in the initial dependency graph, PDF.js exists in a lazy chunk, and the DOCX
+Worker asset is emitted.
+
+Bundle bytes and the initial dependency graph are the primary metrics. Results
+are stored in `results/baseline.json`, `results/optimized.json`, and
+`results/comparison.json`.

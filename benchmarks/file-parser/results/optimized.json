@@ -1,0 +1,42 @@
+{
+  "benchmark": "lazy-worker-file-parser-bundle",
+  "generatedAt": "2026-10-08T09:08:41.045Z",
+  "environment": {
+    "node": "v20.19.0",
+    "platform": "win32-x64",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz"
+  },
+  "optimized": {
+    "initial": {
+      "chunkCount": 1,
+      "moduleCount": 692,
+      "javascriptBytes": 1456891,
+      "javascriptGzipBytes": 496121,
+      "includesJsZip": false,
+      "includesPdfJs": false
+    },
+    "lazy": {
+      "chunkCount": 3,
+      "moduleCount": 5,
+      "javascriptBytes": 507005,
+      "javascriptGzipBytes": 154379,
+      "includesJsZip": false,
+      "includesPdfJs": true
+    },
+    "output": {
+      "javascriptChunkCount": 4,
+      "assetCount": 5,
+      "pdfWorkerAssetBytes": 2174484,
+      "docxWorkerAssetBytes": 97664
+    },
+    "buildDurationMs": 10263.03
+  },
+  "notes": {
+    "networkRequestsSent": 0,
+    "buildMode": "Vite production build with write disabled",
+    "primaryMetrics": [
+      "initial.javascriptBytes",
+      "initial.javascriptGzipBytes"
+    ]
+  }
+}
