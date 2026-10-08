@@ -22,5 +22,12 @@ The token value is a deterministic local estimate rather than a claim about
 DeepSeek billing tokens. Byte size is measured from the serialized request and
 is the primary transport-size metric.
 
-The generated result is stored at `results/baseline.json`. The future
-token-budget strategy must reuse this exact fixture and measurement method.
+The comparison uses a 16,000 estimated-token input budget. System messages and
+the latest conversation turn are retained, then earlier complete turns are
+added from newest to oldest while they fit. This prevents an assistant answer
+from being retained without its corresponding user question.
+
+Results are stored in `results/baseline.json`, `results/optimized.json`, and
+`results/comparison.json`. Automatic assertions verify that every request in
+the fixture stays within budget, the latest user message is always retained,
+and no assistant message is kept without its matching user message.

@@ -395,11 +395,8 @@ const submit = async ({ attachments = [] } = {}) => {
   autoScroll = true;
 
   try {
-    // 准备发送给 API 的上下文，排除掉刚才那个空的 AI 占位，content=“”的删除，
+    // Store 会排除页面使用的空 AI 占位，并按 Token 预算选择最近的完整轮次。
     const payloadMessages = sessionStore.getMessagesForModel();
-    if (payloadMessages.length) {
-      payloadMessages.pop(); // 这里删除是迎合ai，别让他以为回复了，其实回复的是空的，
-    }
 
     // --- 第四步：正式发起流式请求 ---
     await chatStream(
@@ -522,12 +519,8 @@ const handleRegenerateMessage = async (index) => {
   autoScroll = true;
 
   try {
-    // 4. 准备发送给大模型的上下文数据
+    // 4. 准备发送给大模型的预算内上下文数据
     const payloadMessages = sessionStore.getMessagesForModel();
-    if (payloadMessages.length) {
-      // 弹出刚才新建的那个空 AI 消息体，因为 API 不需要接收空消息作为输入
-      payloadMessages.pop();
-    }
 
     // 5. 开启流式传输
     await chatStream(

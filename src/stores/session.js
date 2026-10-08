@@ -1,5 +1,17 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import {
+  DEFAULT_CONTEXT_TOKEN_BUDGET,
+  selectContextMessages,
+} from "@/utils/contextWindow";
+
+const configuredContextBudget = Number(
+  import.meta.env.VITE_CONTEXT_TOKEN_BUDGET,
+);
+const CONTEXT_TOKEN_BUDGET =
+  Number.isFinite(configuredContextBudget) && configuredContextBudget > 0
+    ? Math.floor(configuredContextBudget)
+    : DEFAULT_CONTEXT_TOKEN_BUDGET;
 
 // 默认会话名称，用于初始化以及兜底
 const DEFAULT_SESSION_NAME = "新对话";
@@ -575,8 +587,23 @@ export const useSessionStore = defineStore(
       ensureConversation();
       // 获取当前激活会话的名称
       const key = curname.value;
+      const currentMessages = session.value[key];
+      const lastIndex = currentMessages.length - 1;
+
+      // 流式请求前会创建一个空 AI 占位消息。该消息只用于页面渲染，
+      // 不应进入模型上下文，也不应占用上下文预算。
+      const messagesWithoutPlaceholder = currentMessages.filter(
+        (item, index) =>
+          !(
+            index === lastIndex &&
+            item.role === "assistant" &&
+            !(item.content ?? "").trim() &&
+            !(item.attachments?.length)
+          ),
+      );
+
       // 映射每条消息为模型可读的标准格式
-      return session.value[key].map((item) => {
+      const modelMessages = messagesWithoutPlaceholder.map((item) => {
         // 拼接附件描述文本：有附件时生成概述，无附件则为空
         const attachmentsText =
           item.attachments && item.attachments.length
@@ -593,6 +620,10 @@ export const useSessionStore = defineStore(
           role: item.role,
           content: content || "(空消息)",
         };
+      });
+
+      return selectContextMessages(modelMessages, {
+        tokenBudget: CONTEXT_TOKEN_BUDGET,
       });
     };
 

@@ -8,6 +8,7 @@ Vue-LLM 是一个基于 Vue 3 + Vite 构建的轻量级对话应用前端，提�
 - **智能文件附件**：支持上传常见文本文件，同时内置 DOCX 与 PDF 解析流程，自动提取正文预览并附加到对话上下文中。
 - **会话管理增强**：新建对话在输入内容或重命名之前不会出现在侧边栏，避免列表膨胀；删除最后一个会话时会自动创建一条新的空白对话。
 - **即时串流体验**：通过 `chatStream` 接口实时展示模型输出，滚动定位、复制代码块等体验全面优化。
+- **上下文预算管理**：按估算 Token 预算保留最新问题和最近的完整问答轮次，限制长对话请求持续增长。
 - **双模型一键切换**：在聊天面板中直接选择 DeepSeek Reasoner 或 DeepSeek Chat，自由平衡推理深度与响应速度。
 - **持久化存储**：借助 Pinia 与 `pinia-plugin-persistedstate`，会话记录、标题和附件说明都会保存在浏览器本地，刷新不丢失。
 - **多端自适应布局**：针对桌面端、平板和移动端提供分级响应式样式，桌面界面保持原样，同时在小屏幕上提供抽屉式会话栏和整屏聊天体验。
@@ -76,8 +77,9 @@ npm run lint
 2. 复制项目根目录下的 `.env.example` 为 `.env.local`，并填写自己的密钥：
    ```env
    VITE_DEEPSEEK_API_KEY=your_deepseek_api_key
+   VITE_CONTEXT_TOKEN_BUDGET=16000
    ```
-3. `src/config/deepseekKey.js` 会通过 `import.meta.env.VITE_DEEPSEEK_API_KEY` 读取该变量，无需将真实密钥写入源码。
+3. `src/config/deepseekKey.js` 会读取 API Key；上下文预算可以通过 `VITE_CONTEXT_TOKEN_BUDGET` 调整，未配置时默认为 16,000 个本地估算 Token。
 4. `.env.local` 已被 Git 忽略，请勿强制添加或提交；生产环境应通过部署平台的环境变量功能配置密钥。
 
 > 注意：前端环境变量会被打包到浏览器代码中。本项目的配置方式仅适用于本地学习和演示，正式部署时应通过后端代理调用模型接口，避免向客户端暴露长期有效的 API Key。

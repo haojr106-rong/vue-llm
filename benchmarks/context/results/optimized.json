@@ -1,5 +1,5 @@
 {
-  "benchmark": "legacy-full-history-context",
+  "benchmark": "budgeted-context-window",
   "generatedAt": "2026-10-08T08:30:34.769Z",
   "environment": {
     "node": "v20.19.0",
@@ -11,18 +11,19 @@
     "totalMessageCount": 240,
     "content": "deterministic mixed Chinese and ASCII conversation"
   },
-  "baseline": {
-    "policy": "full-history-without-budget",
+  "optimized": {
+    "policy": "estimated-token-budget-with-complete-recent-turns",
+    "tokenBudget": 16000,
     "finalRequest": {
-      "messageCount": 239,
-      "requestCharacters": 60798,
-      "requestBytes": 144760,
-      "estimatedTokens": 41510
+      "messageCount": 91,
+      "requestCharacters": 23311,
+      "requestBytes": 55171,
+      "estimatedTokens": 15803
     },
     "cumulativeAcrossRounds": {
       "requestCount": 120,
-      "requestBytes": 8692158,
-      "estimatedTokens": 2491917
+      "requestBytes": 5335914,
+      "estimatedTokens": 1528774
     },
     "growth": [
       {
@@ -43,41 +44,41 @@
       },
       {
         "round": 50,
-        "messageCount": 99,
-        "requestCharacters": 24997,
-        "requestBytes": 59685,
-        "estimatedTokens": 17107,
-        "droppedMessageCount": 0
+        "messageCount": 91,
+        "requestCharacters": 23013,
+        "requestBytes": 54885,
+        "estimatedTokens": 15728,
+        "droppedMessageCount": 8
       },
       {
         "round": 100,
-        "messageCount": 199,
-        "requestCharacters": 50398,
-        "requestBytes": 120280,
-        "estimatedTokens": 34495,
-        "droppedMessageCount": 0
+        "messageCount": 91,
+        "requestCharacters": 23071,
+        "requestBytes": 54931,
+        "estimatedTokens": 15743,
+        "droppedMessageCount": 108
       },
       {
         "round": 120,
-        "messageCount": 239,
-        "requestCharacters": 60798,
-        "requestBytes": 144760,
-        "estimatedTokens": 41510,
-        "droppedMessageCount": 0
+        "messageCount": 91,
+        "requestCharacters": 23311,
+        "requestBytes": 55171,
+        "estimatedTokens": 15803,
+        "droppedMessageCount": 148
       }
     ],
     "retained": {
-      "messageCount": 239,
-      "containsFirstMessage": true,
+      "messageCount": 91,
+      "containsFirstMessage": false,
       "containsLatestMessage": true,
-      "completeRoundCount": 119,
+      "completeRoundCount": 45,
       "assistantWithoutUserCount": 0,
-      "oldestRetainedUserTurn": 1,
+      "oldestRetainedUserTurn": 75,
       "newestRetainedUserTurn": 120,
-      "messageRatio": 1
+      "messageRatio": 0.3808
     },
     "guarantees": {
-      "allRequestsWithinBudget": false,
+      "allRequestsWithinBudget": true,
       "latestMessageAlwaysRetained": true
     }
   },

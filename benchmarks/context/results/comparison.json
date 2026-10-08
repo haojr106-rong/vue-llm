@@ -1,0 +1,34 @@
+{
+  "benchmark": "context-window-comparison",
+  "generatedAt": "2026-10-08T08:30:34.769Z",
+  "fixture": {
+    "roundCount": 120,
+    "totalMessageCount": 240,
+    "content": "deterministic mixed Chinese and ASCII conversation"
+  },
+  "tokenBudget": 16000,
+  "before": {
+    "finalRequestBytes": 144760,
+    "finalEstimatedTokens": 41510,
+    "cumulativeRequestBytes": 8692158,
+    "cumulativeEstimatedTokens": 2491917,
+    "finalMessageCount": 239
+  },
+  "after": {
+    "finalRequestBytes": 55171,
+    "finalEstimatedTokens": 15803,
+    "cumulativeRequestBytes": 5335914,
+    "cumulativeEstimatedTokens": 1528774,
+    "finalMessageCount": 91,
+    "retainedCompleteRounds": 45,
+    "oldestRetainedUserTurn": 75,
+    "latestMessageAlwaysRetained": true,
+    "assistantWithoutUserCount": 0
+  },
+  "improvement": {
+    "finalRequestBytesReductionPercent": 61.89,
+    "finalEstimatedTokensReductionPercent": 61.93,
+    "cumulativeRequestBytesReductionPercent": 38.61,
+    "cumulativeEstimatedTokensReductionPercent": 38.65
+  }
+}
