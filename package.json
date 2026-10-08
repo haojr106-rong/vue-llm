@@ -10,7 +10,8 @@
     "lint": "eslint . --fix",
     "benchmark:sse": "node benchmarks/sse/benchmark.mjs",
     "benchmark:context": "node benchmarks/context/benchmark.mjs",
-    "benchmark:markdown": "node benchmarks/markdown/benchmark.mjs"
+    "benchmark:markdown": "node benchmarks/markdown/benchmark.mjs",
+    "benchmark:files": "node benchmarks/file-parser/benchmark.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

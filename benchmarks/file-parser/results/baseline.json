@@ -1,0 +1,33 @@
+{
+  "benchmark": "eager-file-parser-bundle",
+  "generatedAt": "2026-10-08T08:57:18.892Z",
+  "environment": {
+    "node": "v20.19.0",
+    "platform": "win32-x64",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz"
+  },
+  "baseline": {
+    "initial": {
+      "chunkCount": 1,
+      "moduleCount": 697,
+      "javascriptBytes": 2061391,
+      "javascriptGzipBytes": 679544,
+      "includesJsZip": true,
+      "includesPdfJs": true
+    },
+    "output": {
+      "javascriptChunkCount": 1,
+      "assetCount": 4,
+      "pdfWorkerAssetBytes": 2174484
+    },
+    "buildDurationMs": 10826.64
+  },
+  "notes": {
+    "networkRequestsSent": 0,
+    "buildMode": "Vite production build with write disabled",
+    "primaryMetrics": [
+      "initial.javascriptBytes",
+      "initial.javascriptGzipBytes"
+    ]
+  }
+}
