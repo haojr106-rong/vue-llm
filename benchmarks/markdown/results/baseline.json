@@ -1,0 +1,34 @@
+{
+  "benchmark": "legacy-markdown-rendering",
+  "generatedAt": "2026-10-08T08:39:05.020Z",
+  "environment": {
+    "node": "v20.19.0",
+    "platform": "win32-x64",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz"
+  },
+  "fixture": {
+    "visibleMessageCount": 30,
+    "unchangedHistoricalMessageCount": 29,
+    "streamingUpdateCount": 200,
+    "content": "Markdown headings, lists, tables, and JavaScript blocks"
+  },
+  "baseline": {
+    "metrics": {
+      "markdownParseCalls": 6000,
+      "parsedCharacters": 2573276,
+      "unchangedHistoricalParseCalls": 5800,
+      "changingMessageParseCalls": 200,
+      "durationMs": 956.91
+    },
+    "outputDigest": "9d919b74d9c5d36850e047aa6ba49178c1421a9c98e930d75cca3f0c896316a6",
+    "finalStreamingCharacters": 11192
+  },
+  "notes": {
+    "networkRequestsSent": 0,
+    "timingIsAuxiliary": true,
+    "primaryMetrics": [
+      "markdownParseCalls",
+      "parsedCharacters"
+    ]
+  }
+}
